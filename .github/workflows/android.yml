@@ -1,0 +1,55 @@
+name: Android build
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write   # needed only to attach APKs to tagged releases
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Unit tests (battery parsing, stale readings, disconnections, duplicate gestures)
+        run: ./gradlew --no-daemon :app:testDebugUnitTest
+
+      - name: Build debug + release APK
+        run: ./gradlew --no-daemon :app:assembleDebug :app:assembleRelease
+
+      - name: Rename APKs
+        run: |
+          mkdir -p out
+          cp app/build/outputs/apk/debug/app-debug.apk out/ProfAliKotb-AirPodsControl-debug.apk
+          cp app/build/outputs/apk/release/app-release.apk out/ProfAliKotb-AirPodsControl.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AirPodsControl-apk
+          path: out/*.apk
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-reports
+          path: app/build/reports/tests/
+
+      - name: Attach to GitHub Release (tags only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: out/*.apk
