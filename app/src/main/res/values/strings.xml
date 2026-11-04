@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AirPods Control</string>
+    <string name="widget_label">AirPods battery</string>
+    <string name="widget_description">Battery of your selected AirPods</string>
+</resources>

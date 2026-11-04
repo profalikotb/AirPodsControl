@@ -1,0 +1,10 @@
+<resources>
+    <color name="splash_bg">#F4F8F8</color>
+    <color name="teal">#0E8C86</color>
+    <style name="Theme.AirPods" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/splash_bg</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:colorAccent">@color/teal</item>
+    </style>
+</resources>
